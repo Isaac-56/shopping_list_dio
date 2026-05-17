@@ -28,8 +28,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('To Do'),
-        backgroundColor: Colors.lightGreen,
-        foregroundColor: Colors.grey[900],
+        backgroundColor: const Color(0xFFFFFDD0),
+        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -49,8 +49,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         minimumSize: const Size(160, 48),
                       ),
                       onPressed: () => notifier.fetchAll(),
@@ -59,8 +59,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         minimumSize: const Size(160, 48),
                       ),
                       onPressed: () => _showGetSingleDialog(notifier),
@@ -69,8 +69,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         minimumSize: const Size(160, 48),
                       ),
                       onPressed: () => _showCreateDialog(notifier),
@@ -79,8 +79,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         minimumSize: const Size(160, 48),
                       ),
                       onPressed: () => _showUpdateDialog(notifier),
@@ -89,8 +89,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         minimumSize: const Size(160, 48),
                       ),
                       onPressed: () => _showDeleteDialog(notifier),
@@ -164,7 +164,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[700]),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
               onPressed: () {
                 final id = int.tryParse(_idController.text);
                 if (id != null) notifier.fetchSingle(id);
@@ -239,7 +239,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[700]),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
               onPressed: () {
                 if (_titleController.text.isNotEmpty) {
                   final newTodo = Todo(
@@ -301,7 +301,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[700]),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
               onPressed: () {
                 final id = int.tryParse(_updateIdController.text);
                 if (id != null && _updateTitleController.text.isNotEmpty) {
@@ -340,7 +340,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[700]),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
               onPressed: () {
                 final id = int.tryParse(_deleteIdController.text);
                 if (id != null) notifier.deleteTodo(id);
