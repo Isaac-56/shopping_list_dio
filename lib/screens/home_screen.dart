@@ -27,7 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To Do (dio + Riverpod)'),
+        title: const Text('To Do'),
         backgroundColor: Colors.lightGreen,
         foregroundColor: Colors.grey[900],
       ),
