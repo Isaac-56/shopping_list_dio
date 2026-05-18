@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To Do (dio + Bloc)'),
+        title: const Text('To Do'),
         backgroundColor: const Color(0xFFFFFDD0),
         foregroundColor: Colors.black,
       ),
