@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To Do'),
+        title: const Text('To Do (dio + Bloc)'),
         backgroundColor: const Color(0xFFFFFDD0),
         foregroundColor: Colors.black,
       ),
@@ -36,6 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
+                if (state is TodoLoading)
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Loading...'),
+                  ),
                 if (state is TodoError)
                   Container(
                     padding: const EdgeInsets.all(8),
