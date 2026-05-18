@@ -33,7 +33,7 @@ DELETE
 ![DELETE](screenshots/delete.png)
 
 Loading
-![DELETE](screenshots/Loading.png)
+![LOADING](screenshots/Loading.png)
 
 
 
