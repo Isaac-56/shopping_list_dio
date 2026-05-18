@@ -18,7 +18,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _deleteIdController = TextEditingController();
   bool _completed = false;
   bool _updateCompleted = false;
-  int _userId = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +34,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            if (state.isLoading) const LinearProgressIndicator(),
             if (state.message.isNotEmpty)
               Container(
                 padding: const EdgeInsets.all(8),
@@ -182,7 +180,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _showCreateDialog(TodoNotifier notifier) {
     _titleController.clear();
     _completed = false;
-    _userId = 1;
     showDialog(
       context: context,
       builder: (ctx) {
@@ -210,25 +207,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      const Text('User ID: '),
-                      Expanded(
-                        child: Slider(
-                          value: _userId.toDouble(),
-                          min: 1,
-                          max: 10,
-                          divisions: 9,
-                          onChanged: (value) {
-                            setStateDialog(() {
-                              _userId = value.toInt();
-                            });
-                          },
-                        ),
-                      ),
-                      Text('$_userId'),
-                    ],
-                  ),
                 ],
               );
             },
@@ -243,7 +221,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () {
                 if (_titleController.text.isNotEmpty) {
                   final newTodo = Todo(
-                    userId: _userId,
+                    userId: 1,
                     title: _titleController.text,
                     completed: _completed,
                   );
