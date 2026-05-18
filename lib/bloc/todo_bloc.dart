@@ -57,14 +57,32 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
 
   Future<void> _onUpdateTodo(UpdateTodo event, Emitter<TodoState> emit) async {
     List<Todo> previousTodos = [];
+    Todo? currentSingleTodo;
     if (state is TodoLoaded) {
-      previousTodos = (state as TodoLoaded).todos;
+      final loadedState = state as TodoLoaded;
+      previousTodos = List.from(loadedState.todos);
+      currentSingleTodo = loadedState.singleTodo;
     }
     emit(TodoLoading());
     try {
-      final updated = await _apiService.updateTodo(event.id, event.todo);
-      final newTodos = previousTodos.map((t) => t.id == event.id ? updated : t).toList();
-      emit(TodoLoaded(todos: newTodos, message: 'Updated: ${updated.title}'));
+      final updatedTodo = await _apiService.updateTodo(event.id, event.todo);
+      final newTodos = previousTodos.map((t) {
+        if (t.id == event.id) {
+          return updatedTodo;
+        }
+        return t;
+      }).toList();
+      Todo? newSingleTodo;
+      if (currentSingleTodo != null && currentSingleTodo.id == event.id) {
+        newSingleTodo = updatedTodo;
+      } else {
+        newSingleTodo = currentSingleTodo;
+      }
+      emit(TodoLoaded(
+        todos: newTodos,
+        singleTodo: newSingleTodo,
+        message: 'Updated: ${updatedTodo.title}',
+      ));
     } catch (e) {
       emit(TodoError('Error: $e'));
     }
