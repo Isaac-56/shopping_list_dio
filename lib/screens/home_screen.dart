@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To Do'),
+        title: const Text('To Do (dio + Bloc)'),
         backgroundColor: const Color(0xFFFFFDD0),
         foregroundColor: Colors.black,
       ),
@@ -200,11 +200,11 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Create New Todo'),
-          content: StatefulBuilder(
-            builder: (context, setStateDialog) {
-              return Column(
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Create New Todo'),
+              content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
@@ -225,30 +225,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ],
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
-              onPressed: () {
-                if (_titleController.text.isNotEmpty) {
-                  final newTodo = Todo(
-                    userId: 1,
-                    title: _titleController.text,
-                    completed: _completed,
-                  );
-                  bloc.add(AddTodo(newTodo));
-                }
-                Navigator.pop(ctx);
-              },
-              child: const Text('Create'),
-            ),
-          ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+                  onPressed: () {
+                    if (_titleController.text.isNotEmpty) {
+                      final newTodo = Todo(
+                        userId: 1,
+                        title: _titleController.text,
+                        completed: _completed,
+                      );
+                      bloc.add(AddTodo(newTodo));
+                    }
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -261,57 +261,61 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Update Todo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _updateIdController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Todo ID'),
-              ),
-              TextField(
-                controller: _updateTitleController,
-                decoration: const InputDecoration(labelText: 'New Title'),
-              ),
-              Row(
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Update Todo'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Completed: '),
-                  Checkbox(
-                    value: _updateCompleted,
-                    onChanged: (value) {
-                      setState(() {
-                        _updateCompleted = value!;
-                      });
-                    },
+                  TextField(
+                    controller: _updateIdController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Todo ID'),
+                  ),
+                  TextField(
+                    controller: _updateTitleController,
+                    decoration: const InputDecoration(labelText: 'New Title'),
+                  ),
+                  Row(
+                    children: [
+                      const Text('Completed: '),
+                      Checkbox(
+                        value: _updateCompleted,
+                        onChanged: (value) {
+                          setStateDialog(() {
+                            _updateCompleted = value!;
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
-              onPressed: () {
-                final id = int.tryParse(_updateIdController.text);
-                if (id != null && _updateTitleController.text.isNotEmpty) {
-                  final updatedTodo = Todo(
-                    userId: 1,
-                    title: _updateTitleController.text,
-                    completed: _updateCompleted,
-                  );
-                  bloc.add(UpdateTodo(id, updatedTodo));
-                }
-                Navigator.pop(ctx);
-              },
-              child: const Text('Update'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
+                  onPressed: () {
+                    final id = int.tryParse(_updateIdController.text);
+                    if (id != null && _updateTitleController.text.isNotEmpty) {
+                      final updatedTodo = Todo(
+                        userId: 1,
+                        title: _updateTitleController.text,
+                        completed: _updateCompleted,
+                      );
+                      bloc.add(UpdateTodo(id, updatedTodo));
+                    }
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text('Update'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
