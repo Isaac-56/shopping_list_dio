@@ -26,30 +26,29 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Future<void> _onFetchSingleTodo(FetchSingleTodo event, Emitter<TodoState> emit) async {
+    final previousState = state;
+    List<Todo> previousTodos = [];
+    if (previousState is TodoLoaded) {
+      previousTodos = previousState.todos;
+    }
     emit(TodoLoading());
     try {
       final todo = await _apiService.getTodoById(event.id);
-      final currentState = state;
-      List<Todo> currentTodos = [];
-      if (currentState is TodoLoaded) {
-        currentTodos = currentState.todos;
-      }
-      emit(TodoLoaded(todos: currentTodos, singleTodo: todo, message: 'Fetched: ${todo.title}'));
+      emit(TodoLoaded(todos: previousTodos, singleTodo: todo, message: 'Fetched: ${todo.title}'));
     } catch (e) {
       emit(TodoError('Error: $e'));
     }
   }
 
   Future<void> _onAddTodo(AddTodo event, Emitter<TodoState> emit) async {
+    List<Todo> previousTodos = [];
+    if (state is TodoLoaded) {
+      previousTodos = (state as TodoLoaded).todos;
+    }
     emit(TodoLoading());
     try {
       final newTodo = await _apiService.createTodo(event.todo);
-      final currentState = state;
-      List<Todo> currentTodos = [];
-      if (currentState is TodoLoaded) {
-        currentTodos = currentState.todos;
-      }
-      final updatedTodos = [newTodo, ...currentTodos].take(5).toList();
+      final updatedTodos = [newTodo, ...previousTodos].take(5).toList();
       emit(TodoLoaded(todos: updatedTodos, message: 'Added: ${newTodo.title}'));
     } catch (e) {
       emit(TodoError('Error: $e'));
@@ -57,32 +56,30 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   Future<void> _onUpdateTodo(UpdateTodo event, Emitter<TodoState> emit) async {
+    List<Todo> previousTodos = [];
+    if (state is TodoLoaded) {
+      previousTodos = (state as TodoLoaded).todos;
+    }
     emit(TodoLoading());
     try {
       final updated = await _apiService.updateTodo(event.id, event.todo);
-      final currentState = state;
-      if (currentState is TodoLoaded) {
-        final newTodos = currentState.todos.map((t) => t.id == event.id ? updated : t).toList();
-        emit(TodoLoaded(todos: newTodos, message: 'Updated: ${updated.title}'));
-      } else {
-        emit(TodoError('Cannot update: state not loaded'));
-      }
+      final newTodos = previousTodos.map((t) => t.id == event.id ? updated : t).toList();
+      emit(TodoLoaded(todos: newTodos, message: 'Updated: ${updated.title}'));
     } catch (e) {
       emit(TodoError('Error: $e'));
     }
   }
 
   Future<void> _onDeleteTodo(DeleteTodo event, Emitter<TodoState> emit) async {
+    List<Todo> previousTodos = [];
+    if (state is TodoLoaded) {
+      previousTodos = (state as TodoLoaded).todos;
+    }
     emit(TodoLoading());
     try {
       await _apiService.deleteTodo(event.id);
-      final currentState = state;
-      if (currentState is TodoLoaded) {
-        final newTodos = currentState.todos.where((t) => t.id != event.id).toList();
-        emit(TodoLoaded(todos: newTodos, message: 'Deleted todo id ${event.id}'));
-      } else {
-        emit(TodoError('Cannot delete: state not loaded'));
-      }
+      final newTodos = previousTodos.where((t) => t.id != event.id).toList();
+      emit(TodoLoaded(todos: newTodos, message: 'Deleted todo id ${event.id}'));
     } catch (e) {
       emit(TodoError('Error: $e'));
     }
