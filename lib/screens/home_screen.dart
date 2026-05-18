@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/todo_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/todo_bloc.dart';
+import '../bloc/todo_event.dart';
+import '../bloc/todo_state.dart';
 import '../models/todo.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
   final TextEditingController _updateIdController = TextEditingController();
@@ -21,131 +23,139 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(todoProvider);
-    final notifier = ref.read(todoProvider.notifier);
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('To Do'),
+        title: const Text('To Do (dio + Bloc)'),
         backgroundColor: const Color(0xFFFFFDD0),
         foregroundColor: Colors.black,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            if (state.message.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(8),
-                color: Colors.grey[200],
-                child: Text(state.message),
-              ),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(160, 48),
-                      ),
-                      onPressed: () => notifier.fetchAll(),
-                      child: const Text('GET ALL'),
+      body: BlocBuilder<TodoBloc, TodoState>(
+        builder: (context, state) {
+          final bloc = context.read<TodoBloc>();
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                if (state is TodoError)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    color: Colors.red[100],
+                    child: Text(state.error),
+                  ),
+                if (state is TodoLoaded && state.message.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    color: Colors.grey[200],
+                    child: Text(state.message),
+                  ),
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(160, 48),
+                          ),
+                          onPressed: () => bloc.add(FetchTodos()),
+                          child: const Text('GET ALL'),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(160, 48),
+                          ),
+                          onPressed: () => _showGetSingleDialog(bloc),
+                          child: const Text('GET SINGLE'),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(160, 48),
+                          ),
+                          onPressed: () => _showCreateDialog(bloc),
+                          child: const Text('CREATE'),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(160, 48),
+                          ),
+                          onPressed: () => _showUpdateDialog(bloc),
+                          child: const Text('UPDATE'),
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(160, 48),
+                          ),
+                          onPressed: () => _showDeleteDialog(bloc),
+                          child: const Text('DELETE'),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(160, 48),
-                      ),
-                      onPressed: () => _showGetSingleDialog(notifier),
-                      child: const Text('GET SINGLE'),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(160, 48),
-                      ),
-                      onPressed: () => _showCreateDialog(notifier),
-                      child: const Text('CREATE'),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(160, 48),
-                      ),
-                      onPressed: () => _showUpdateDialog(notifier),
-                      child: const Text('UPDATE'),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        minimumSize: const Size(160, 48),
-                      ),
-                      onPressed: () => _showDeleteDialog(notifier),
-                      child: const Text('DELETE'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (state.items.isNotEmpty)
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'All Todos',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: state.items.length,
-                        itemBuilder: (ctx, index) {
-                          final todo = state.items[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(todo.title),
-                              subtitle: Text('ID: ${todo.id} | User: ${todo.userId}'),
-                              trailing: Icon(
-                                todo.completed ? Icons.check_circle : Icons.pending,
-                                color: todo.completed ? Colors.green : Colors.orange,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            if (state.singleItem != null)
-              Card(
-                color: Colors.lightGreen[100],
-                child: ListTile(
-                  title: Text(state.singleItem!.title),
-                  subtitle: Text(
-                    'ID: ${state.singleItem!.id}\nCompleted: ${state.singleItem!.completed}',
                   ),
                 ),
-              ),
-          ],
-        ),
+                if (state is TodoLoaded && state.todos.isNotEmpty)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'All Todos',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: state.todos.length,
+                            itemBuilder: (ctx, index) {
+                              final todo = state.todos[index];
+                              return Card(
+                                child: ListTile(
+                                  title: Text(todo.title),
+                                  subtitle: Text('ID: ${todo.id} | User: ${todo.userId}'),
+                                  trailing: Icon(
+                                    todo.completed ? Icons.check_circle : Icons.pending,
+                                    color: todo.completed ? Colors.green : Colors.orange,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (state is TodoLoaded && state.singleTodo != null)
+                  Card(
+                    color: Colors.lightGreen[100],
+                    child: ListTile(
+                      title: Text(state.singleTodo!.title),
+                      subtitle: Text(
+                        'ID: ${state.singleTodo!.id}\nCompleted: ${state.singleTodo!.completed}',
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  void _showGetSingleDialog(TodoNotifier notifier) {
+  void _showGetSingleDialog(TodoBloc bloc) {
     showDialog(
       context: context,
       builder: (ctx) {
@@ -165,7 +175,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
               onPressed: () {
                 final id = int.tryParse(_idController.text);
-                if (id != null) notifier.fetchSingle(id);
+                if (id != null) {
+                  bloc.add(FetchSingleTodo(id));
+                }
                 _idController.clear();
                 Navigator.pop(ctx);
               },
@@ -177,7 +189,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _showCreateDialog(TodoNotifier notifier) {
+  void _showCreateDialog(TodoBloc bloc) {
     _titleController.clear();
     _completed = false;
     showDialog(
@@ -225,7 +237,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     title: _titleController.text,
                     completed: _completed,
                   );
-                  notifier.addTodo(newTodo);
+                  bloc.add(AddTodo(newTodo));
                 }
                 Navigator.pop(ctx);
               },
@@ -237,7 +249,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _showUpdateDialog(TodoNotifier notifier) {
+  void _showUpdateDialog(TodoBloc bloc) {
     _updateIdController.clear();
     _updateTitleController.clear();
     _updateCompleted = false;
@@ -288,7 +300,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     title: _updateTitleController.text,
                     completed: _updateCompleted,
                   );
-                  notifier.updateTodo(id, updatedTodo);
+                  bloc.add(UpdateTodo(id, updatedTodo));
                 }
                 Navigator.pop(ctx);
               },
@@ -300,7 +312,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _showDeleteDialog(TodoNotifier notifier) {
+  void _showDeleteDialog(TodoBloc bloc) {
     _deleteIdController.clear();
     showDialog(
       context: context,
@@ -321,7 +333,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black),
               onPressed: () {
                 final id = int.tryParse(_deleteIdController.text);
-                if (id != null) notifier.deleteTodo(id);
+                if (id != null) {
+                  bloc.add(DeleteTodo(id));
+                }
                 _deleteIdController.clear();
                 Navigator.pop(ctx);
               },
