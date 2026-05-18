@@ -15,6 +15,28 @@ Features
 - Loading text indicator
 - Error handling with messages
 
+ Screenshots
+
+GET ALL
+![GET ALL](screenshots/get_all.png)
+
+GET SINGLE
+![GET SINGLE](screenshots/get_single.png)
+
+CREATE
+![CREATE](screenshots/create_new.png)
+
+UPDATE
+![UPDATE](screenshots/update.png)
+
+DELETE
+![DELETE](screenshots/delete.png)
+
+Loading
+![DELETE](screenshots/Loading.png)
+
+
+
 Requirements Fulfilled
 
 -Provider for state management  
